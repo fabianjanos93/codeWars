@@ -14,14 +14,14 @@ public class Immortal {
     long startTime = System.currentTimeMillis();
 //    // System.out.println(elderAge(SIDE_LENGTH, SIDE_LENGTH, K, 1000007));
 //    // System.out.println(elderAge(545, 435, 342, 1000007)); // result: 808451
-    System.out.println(elderAge(120, 254, 2, 10000000)); //result : 5
+    System.out.println(elderAge(17, 6, 0, 10000000)); //result : 5
     long estimatedTime = System.currentTimeMillis() - startTime;
     System.out.println("run milis:" + estimatedTime);
 
     startTime = System.currentTimeMillis();
 //    // System.out.println(oldElderAge(SIDE_LENGTH, SIDE_LENGTH, K, 1000007));
 //    // System.out.println(oldElderAge(545, 435, 342, 1000007)); // result: 808451
-    System.out.println(oldElderAge(120, 254, 2, 10000000)); //result : 5
+    System.out.println(oldElderAge(17, 6, 0, 10000000)); //result : 5
 
     // "TeStS:
 
@@ -44,6 +44,8 @@ public class Immortal {
 
   static long elderAge(long n, long m, long k, long newp) {
     long sum = 0;
+    boolean thirdSectionTopCalculated = false;
+    boolean thirdSectionBottomCalculated = false;
 
     // n is always the longer side
     if (n < m) {
@@ -55,32 +57,43 @@ public class Immortal {
     for (long i = 1; i <= m; i++) {
 
       long startValue = nextPowerOfTwo(i);
-      long endValueN = i;
-      long endValueM = i;
-      boolean set = false;
+      long endValueN = i - 1;
+      long endValueM = i - 1;
+      boolean setBottom = false;
+      boolean setTop = false;
 
       // First Section
       long nextPowerOfTwo = nextPowerOfTwo(i);
       long remainingSmallerBlocks = nextPowerOfTwo - i;
       while (remainingSmallerBlocks > 0) {
-        if (i + remainingSmallerBlocks > n) {
-          break;
-        }
         long previousPowerOfTwo = highestPowerOfTwoLessThan(remainingSmallerBlocks);
+        if (i + remainingSmallerBlocks > n) {
+          remainingSmallerBlocks -= previousPowerOfTwo;
+          continue;
+        }
         long sum1 = sumOfFullPowerBlock(previousPowerOfTwo, (previousPowerOfTwo * 2) - 1, k, newp);
-        // System.out.println(i + " " + m + " " + remainingSmallerBlocks);
+//         System.out.println(i + " " + m + " " + remainingSmallerBlocks);
         if (i + remainingSmallerBlocks <= m) {
           sum1 = sum1 << 1;
-          if (!set) {
+          if (!setBottom) {
             endValueM = i + remainingSmallerBlocks;
-            // System.out.println(endValueM);
-            set = true;
+//            System.out.println(
+//                i + " First setBottom to " + endValueM + " (" + remainingSmallerBlocks + ")");
+            setBottom = true;
+          }
+        }
+        if (i + remainingSmallerBlocks <= n) {
+          if (!setTop) {
+            endValueN = i + remainingSmallerBlocks;
+//            System.out.println(
+//                i + " First setBottom to " + endValueM + " (" + remainingSmallerBlocks + ")");
+            setTop = true;
           }
         }
         sum += sum1 % newp;
-        // System.out.println(
-//            i + " first section: " + sum1 + "(from: " + previousPowerOfTwo + ", to: " + (
-//                (previousPowerOfTwo * 2) - 1) + ")");
+        System.out.println(
+            i + " first section: " + sum1 + "(from: " + previousPowerOfTwo + ", to: " + (
+                (previousPowerOfTwo * 2) - 1) + ")");
         remainingSmallerBlocks -= previousPowerOfTwo;
       }
 
@@ -88,6 +101,7 @@ public class Immortal {
       while (nextPowerOfTwo(endValueN + 1) <= n) {
         endValueN = nextPowerOfTwo(endValueN + 1);
         if (nextPowerOfTwo(endValueM + 1) <= m - 1) {
+//          System.out.println(i + " Update setBottom to " + nextPowerOfTwo(endValueM + 1));
           endValueM = nextPowerOfTwo(endValueM + 1);
         }
       }
@@ -102,22 +116,45 @@ public class Immortal {
       }
 
       // Third Section
-      //Bottom
+      // Bottom
+      System.out.println("endv: " + endValueN);
+      if (!thirdSectionBottomCalculated && (endValueM < n)) {
+        long thirdSectionBottom =
+            sumOfFullPowerBlock(endValueM, endValueM * 2 - 1, k, newp) * (m - endValueM);
+        sum += thirdSectionBottom;
+        System.out.println("bottom sum: "+ (m - endValueM) + " " + thirdSectionBottom);
+        thirdSectionBottomCalculated = true;
+      }
+      // Top
+      if (!thirdSectionTopCalculated && (endValueN < m )) {
+        long thirdSectionTop =
+            sumOfFullPowerBlock(endValueN, endValueN * 2 - 1, k, newp) * (n - endValueN);
+        System.out.println("top sum: "+ (n - endValueN) + " " + thirdSectionTop);
+        sum += thirdSectionTop;
+        thirdSectionTopCalculated = true;
+      }
+
+      // Fourth Section
+      // Bottom
       // System.out.println("endM: " + endValueM);
-      for (long j = endValueM; j < m; j++) {
-        long cellValue = (i - 1 ^ j) - k;
-        if (cellValue > 0) {
-          sum += cellValue;
-          // System.out.println(i + "|" + j + " cell from rest bottom: " + cellValue);
+      if (i > highestPowerOfTwoLessThan(m) || !thirdSectionBottomCalculated) {
+        for (long j = endValueM; j < m; j++) {
+          long cellValue = (i - 1 ^ j) - k;
+          if (cellValue > 0) {
+            sum += cellValue;
+            System.out.println(i + "|" + j + " cell from rest bottom: " + cellValue);
+          }
         }
       }
 
-      //Top
-      for (long j = endValueN; j < n; j++) {
-        long cellValue = (i - 1 ^ j) - k;
-        if (cellValue > 0) {
-          sum += cellValue;
-          // System.out.println(i + "|" + j + " cell from rest top: " + cellValue);
+      // Top
+      if (i > highestPowerOfTwoLessThan(m) || !thirdSectionTopCalculated) {
+        for (long j = endValueN; j < n; j++) {
+          long cellValue = (i - 1 ^ j) - k;
+          if (cellValue > 0) {
+            sum += cellValue;
+            System.out.println(i + "|" + j + " cell from rest top: " + cellValue);
+          }
         }
       }
     }
@@ -137,9 +174,9 @@ public class Immortal {
         long cellValue = (col ^ row) - k;
         cellValue = cellValue >= 0 ? cellValue : 0;
         String binaryString = Long.toBinaryString(cellValue);
-//        System.out.print(
-//            " ".repeat(8 - binaryString.length()) + binaryString + "(" + String.format("%2d",
-//                cellValue) + ") ");
+        System.out.print(
+            " ".repeat(8 - binaryString.length()) + binaryString + "(" + String.format("%2d",
+                cellValue) + ") ");
         if (cellValue > 0) {
 //          if (row < m) {
 //            cellValue = cellValue << 1;
@@ -147,10 +184,10 @@ public class Immortal {
           sum += cellValue;
         }
       }
-      // System.out.println();
+      System.out.println();
 //      System.out.print("             ".repeat((int) col + 1));
     }
-    // System.out.println();
+    System.out.println();
     return sum % newp;
   }
 

@@ -37,8 +37,8 @@ public class Immortal {
       n = temp;
     }
     long sum = 0;
-    long width = n;
-    long height = m;
+    long width = n-1;
+    long height = m-1;
     long offset = 0;
 
     long nSide = highestPowerOfTwoLessThan(n - 1);
@@ -71,7 +71,8 @@ public class Immortal {
     long totalLength = 0;
     long sum = 0;
     while (totalLength + nSideLength <= n && totalLength + nSideLength <= m) {
-      long multiplier = Math.min(nSideLength, n-nSideLength);
+      long multiplier = Math.min(nSideLength, n-nSideLength + 1);
+      System.out.println("Stage 1: nSideLength: " + nSideLength + " multiplier: " + multiplier);
       sum += recursiveStep(nSideLength, multiplier, k, newp);
       totalLength += nSideLength;
       nSideLength <<= 1;
@@ -83,7 +84,7 @@ public class Immortal {
     long startPointN =  blockSize * 2;
     long sum = 0;
     while (startPointN < n) {
-      System.out.println("Stage 2");
+      System.out.println("Stage 2:");
       long firstValueOfBlock = ((startPointN + offset) ^ offset) - k;
       long lastValueOfBlock = ((startPointN + offset + blockSize - 1 ) ^ offset) - k;
       System.out.println(
@@ -97,10 +98,11 @@ public class Immortal {
 
 
   public static long recursiveStep(long sideLength, long multiplier, long k, long newp) {
-    long sum = 0;
+    long sum = sideLength / 2;
+    System.out.println("Recursive: start: " + sideLength + " finish: " + ((sideLength * 2) - 1) + " multiplier: " + multiplier);
     sum +=
         (sumOfFullPowerBlock(sideLength, (sideLength * 2) - 1, k, newp) % newp * multiplier) % newp;
-    for (long i = sideLength / 2; i > 0; i = i >> 1) {
+    for (long i = sideLength / 4; i > 0; i = i >> 1) {
       sum += recursiveStep(i, i, k, newp);
     }
     return sum % newp;

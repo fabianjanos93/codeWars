@@ -1,8 +1,6 @@
 package org.example;
 
 import java.util.HashMap;
-import java.util.Map;
-import javafx.util.Pair;
 
 public class Immortal {
 
@@ -18,34 +16,19 @@ public class Immortal {
     long startTime = System.currentTimeMillis();
 //    // System.out.println(elderAge(SIDE_LENGTH, SIDE_LENGTH, K, 1000007));
 //    // System.out.println(elderAge(545, 435, 342, 1000007)); // result: 808451
-    System.out.println(elderAge(100000000L, 50000000L, 60000, 13719506)); //result : 5
+    System.out.println(elderAge(18, 60, 0, 10000000)); //result : 5
     long estimatedTime = System.currentTimeMillis() - startTime;
     System.out.println("run milis:" + estimatedTime);
 
     startTime = System.currentTimeMillis();
 //    // System.out.println(oldElderAge(SIDE_LENGTH, SIDE_LENGTH, K, 1000007));
-//    System.out.println(oldElderAge(20, 64, 0, 10000000)); //result : 5
-
-    // "TeStS:
-
-//    // System.out.println(elderAge(12, 1, 0, 100000) == oldElderAge(12, 1, 0, 100000));
-//    // System.out.println(elderAge(12, 2, 0, 100000) == oldElderAge(12, 2, 0, 100000));
-//    // System.out.println(elderAge(12, 3, 0, 100000) == oldElderAge(12, 3, 0, 100000));
-//    // System.out.println(elderAge(12, 4, 0, 100000) == oldElderAge(12, 4, 0, 100000));
-//    // System.out.println(elderAge(12, 5, 0, 100000) == oldElderAge(12, 5, 0, 100000));
-//    // System.out.println(elderAge(12, 6, 0, 100000) == oldElderAge(12, 6, 0, 100000));
-//    // System.out.println(elderAge(12, 7, 0, 100000) == oldElderAge(12, 7, 0, 100000));
-//    // System.out.println(elderAge(12, 8, 0, 100000) == oldElderAge(12, 8, 0, 100000));
-//    // System.out.println(elderAge(12, 9, 0, 100000) == oldElderAge(12, 9, 0, 100000));
-//    // System.out.println(elderAge(12, 10, 0, 100000) == oldElderAge(12,10, 0, 100000));
-//    // System.out.println(elderAge(12, 11, 0, 100000) == oldElderAge(12,11, 0, 100000));
-//    // System.out.println(elderAge(12, 10, 0, 100000) == oldElderAge(12,10, 0, 100000));
+    System.out.println(oldElderAge(18, 60, 0, 10000000)); //result : 5
 
     estimatedTime = System.currentTimeMillis() - startTime;
     System.out.println("run milis:" + estimatedTime);
   }
 
-  static long elderAge(long n, long m, long k, long newp) {
+  static long secondElderAge(long n, long m, long k, long newp) {
     long sum = 0;
     boolean thirdSectionTopCalculated = false;
     boolean thirdSectionBottomCalculated = false;
@@ -152,8 +135,6 @@ public class Immortal {
       stage3Time += System.currentTimeMillis() - startTime;
       startTime = System.currentTimeMillis();
 
-
-
       // Fourth Section
       // Bottom
       // System.out.println("endM: " + endValueM);
@@ -205,7 +186,6 @@ public class Immortal {
           }
         }
       }
-
 
       // Top
       boolean nothingLeftTop = false;
@@ -264,6 +244,71 @@ public class Immortal {
     System.out.println("stage2Time " + stage2Time);
     System.out.println("stage3Time " + stage3Time);
     System.out.println("stage4Time " + stage4Time);
+    return sum % newp;
+  }
+
+
+  static long elderAge(long n, long m, long k, long newp) {
+    // n is always the bigger side
+    if (n < m) {
+      long temp = m;
+      m = n;
+      n = temp;
+    }
+    long sum = 0;
+    long blockSize = Math.min(highestPowerOfTwoLessThan(n), highestPowerOfTwoLessThan(m));
+    long height = m;
+
+    while(height > 1) {
+      sum += stage4(n, height, k, newp, blockSize) % newp;
+      height -= blockSize;
+      blockSize = highestPowerOfTwoLessThan(height);
+    }
+    return sum;
+  }
+
+  private static long stage4(long n, long m, long k, long newp, long blockSize) {
+    long sum = 0;
+    sum += stage1(n, m, k, newp) % newp;
+    sum += stage1(m, m, k, newp) % newp;
+
+    sum = stage2(n, k, newp, blockSize, sum);
+    sum = stage2(m, k, newp, blockSize, sum);
+
+    return sum;
+  }
+
+  private static long stage2(long n, long k, long newp, long blockSize, long sum) {
+    long startPoint = blockSize;
+    while (startPoint < n) {
+      sum += sumOfFullPowerBlock(startPoint, startPoint + blockSize - 1, k, newp) * Math.min(n - startPoint,
+          blockSize);
+      startPoint += blockSize;
+    }
+    return sum;
+  }
+
+  private static long stage1(long n, long m, long k, long newp) {
+    long nSideLength = 1;
+    long totalLength = 0;
+    long sum = 0;
+    while (totalLength + nSideLength <= n && totalLength + nSideLength <= m) {
+      sum += recursiveStep(nSideLength, k, newp);
+      totalLength += nSideLength;
+      System.out.println(totalLength);
+      nSideLength <<= 1;
+    }
+    return sum;
+  }
+
+
+  public static long recursiveStep(long sideLength, long k, long newp) {
+    long sum = 0;
+    sum +=
+        (sumOfFullPowerBlock(sideLength, (sideLength * 2) - 1, k, newp) % newp * sideLength) % newp;
+    for (long i = sideLength / 2; i > 0; i = i >> 1) {
+      sum += recursiveStep(i, k, newp);
+    }
     return sum % newp;
   }
 

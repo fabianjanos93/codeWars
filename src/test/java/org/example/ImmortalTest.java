@@ -29,4 +29,17 @@ class ImmortalTest {
   void rect14times14() {
     assertEquals(1442, Immortal.elderAge(14, 14, 0, 1000007));
   }
+
+  @Test
+  void rect14times14k1() {
+    assertEquals(1260, Immortal.elderAge(14, 14, 1, 1000007));
+  }
+  @Test
+  void rect30times50k10() {
+    assertEquals(26928, Immortal.elderAge(30, 50, 10, 1000007));
+  }
+  @Test
+  void rect10times15() {
+    assertEquals(1095, Immortal.elderAge(10, 15, 0, 1000007));
+  }
 }

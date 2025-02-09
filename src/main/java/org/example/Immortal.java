@@ -16,13 +16,13 @@ public class Immortal {
     long startTime = System.currentTimeMillis();
 //    // System.out.println(elderAge(SIDE_LENGTH, SIDE_LENGTH, K, 1000007));
 //    // System.out.println(elderAge(545, 435, 342, 1000007)); // result: 808451
-    System.out.println(elderAge(12, 14, 0, 1000007)); //result : 5
+    System.out.println(elderAge(10, 20, 0, 1000007)); //result : 5
     long estimatedTime = System.currentTimeMillis() - startTime;
     System.out.println("run milis:" + estimatedTime);
 
     startTime = System.currentTimeMillis();
 //    // System.out.println(oldElderAge(SIDE_LENGTH, SIDE_LENGTH, K, 1000007));
-    System.out.println(oldElderAge(12, 14, 0, 1000007)); //result : 5
+    System.out.println(oldElderAge(10, 20, 0, 1000007)); //result : 5
 
     estimatedTime = System.currentTimeMillis() - startTime;
     System.out.println("run milis:" + estimatedTime);
@@ -49,11 +49,11 @@ public class Immortal {
 //      System.out.println("widthTop: " + width + " | heightTop: " + heightTop);
       if (heightTop > 0) {
         System.out.println("TOP");
+        System.out.println("widthTop: " + width + " | heightTop: " + heightTop + " | blockSizeTop: " + blockSizeTop);
         sum += stage0(width, heightTop, k, newp, blockSizeTop, offset) % newp;
         heightTop -= blockSizeTop;
         width -= blockSizeTop;
-        blockSizeTop = highestPowerOfTwoLessThan(heightTop);
-//        System.out.println("widthTop: " + width + " | heightTop: " + heightTop);
+        blockSizeTop = Math.min(highestPowerOfTwoLessThan(heightTop + 1), highestPowerOfTwoLessThan(width));
       }
       System.out.println("BOTTOM");
       sum += stage0(heightBottom, heightBottom, k, newp, blockSizeBottom, offset) % newp;
@@ -90,7 +90,8 @@ public class Immortal {
   private static long stage2(long n, long k, long newp, long blockSize, long offset) {
     long startPointN = blockSize * 2;
     long sum = 0;
-    while (startPointN < n) {
+    System.out.println("startPointN: " + startPointN + "(" + n + ")");
+    while (startPointN <= n) {
 //      System.out.println("Stage 2: startPoint: " + startPointN + " (" + n + ")");
       long firstValueOfBlock = ((startPointN + offset) ^ offset) - k;
       long lastValueOfBlock = ((startPointN + offset + blockSize - 1) ^ offset) - k;

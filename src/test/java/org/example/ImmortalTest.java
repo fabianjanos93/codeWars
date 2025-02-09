@@ -39,7 +39,16 @@ class ImmortalTest {
     assertEquals(26928, Immortal.elderAge(30, 50, 10, 1000007));
   }
   @Test
+  void rect11times13k2() {
+    assertEquals(740, Immortal.elderAge(11, 13, 2, 1000007));
+  }
+  @Test
   void rect10times15() {
     assertEquals(1095, Immortal.elderAge(10, 15, 0, 1000007));
+  }
+
+  @Test
+  void rect545times435k432() {
+    assertEquals(808451, Immortal.elderAge(545, 435, 342, 1000007));
   }
 }

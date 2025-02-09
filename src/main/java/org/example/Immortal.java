@@ -16,13 +16,13 @@ public class Immortal {
     long startTime = System.currentTimeMillis();
 //    // System.out.println(elderAge(SIDE_LENGTH, SIDE_LENGTH, K, 1000007));
 //    // System.out.println(elderAge(545, 435, 342, 1000007)); // result: 808451
-    System.out.println(elderAge(16, 16, 0, 10000000)); //result : 5
+    System.out.println(elderAge(16, 18, 0, 10000000)); //result : 5
     long estimatedTime = System.currentTimeMillis() - startTime;
     System.out.println("run milis:" + estimatedTime);
 
     startTime = System.currentTimeMillis();
 //    // System.out.println(oldElderAge(SIDE_LENGTH, SIDE_LENGTH, K, 1000007));
-    System.out.println(oldElderAge(16, 16, 0, 10000000)); //result : 5
+    System.out.println(oldElderAge(16, 18, 0, 10000000)); //result : 5
 
     estimatedTime = System.currentTimeMillis() - startTime;
     System.out.println("run milis:" + estimatedTime);
@@ -38,19 +38,25 @@ public class Immortal {
     }
     long sum = 0;
     long width = n-1;
-    long height = m-1;
+    long heightTop = m-1;
+    long heightBottom = heightTop;
     long offset = 0;
 
-    long nSide = highestPowerOfTwoLessThan(n - 1);
-    long mSide = highestPowerOfTwoLessThan(m - 1);
-    long blockSize = Math.min(nSide, mSide);
-    while (height > 0) {
-      System.out.println("width: " + width + " | height: " + height);
-      sum += stage0(width, height, k, newp, blockSize, offset) % newp;
-      height -= blockSize;
-      width -= blockSize;
-      offset += blockSize;
-      blockSize = highestPowerOfTwoLessThan(height);
+    long blockSizeTop = Math.min(highestPowerOfTwoLessThan(n - 1), highestPowerOfTwoLessThan(m));
+    long blockSizeBottom = highestPowerOfTwoLessThan(m-1);
+    System.out.println("blockSizeTop: " + blockSizeTop + " blockSizeBottom: " + blockSizeBottom);
+    while (heightBottom > 0) {
+      System.out.println("widthTop: " + width + " | heightTop: " + heightTop);
+      if(heightTop > 0) {
+        sum += stage0(width, heightTop, k, newp, blockSizeTop, offset) % newp;
+        heightTop -= blockSizeTop;
+        width -= blockSizeTop;
+        blockSizeTop = highestPowerOfTwoLessThan(heightTop);
+      }
+      sum += stage0(heightBottom, heightBottom, k, newp, blockSizeBottom, offset) % newp;
+      heightBottom -= blockSizeBottom;
+      offset += blockSizeBottom;
+      blockSizeBottom = highestPowerOfTwoLessThan(heightBottom);
     }
     return sum;
   }
@@ -58,11 +64,7 @@ public class Immortal {
   private static long stage0(long n, long m, long k, long newp, long blockSize, long offset) {
     long sum = 0;
     sum += stage1(n, m, k, newp) % newp;
-    sum += stage1(m, m, k, newp) % newp;
-
     sum += stage2(n, k, newp, blockSize, offset);
-    sum += stage2(m, k, newp, blockSize, offset);
-
     return sum;
   }
 
@@ -70,10 +72,12 @@ public class Immortal {
     long nSideLength = 1;
     long totalLength = 0;
     long sum = 0;
-    while (totalLength + nSideLength <= n && totalLength + nSideLength <= m) {
+    while (totalLength <= n && totalLength <= m) {
       long multiplier = Math.min(nSideLength, n-nSideLength + 1);
-      System.out.println("Stage 1: nSideLength: " + nSideLength + " multiplier: " + multiplier);
-      sum += recursiveStep(nSideLength, multiplier, k, newp);
+//      System.out.println("totalSideN: " + (totalLength) + "(n: " + n + ", m: " + m + ")");
+      if(multiplier != 0) {
+        sum += recursiveStep(nSideLength, multiplier, k, newp, true);
+      }
       totalLength += nSideLength;
       nSideLength <<= 1;
     }
@@ -97,13 +101,13 @@ public class Immortal {
   }
 
 
-  public static long recursiveStep(long sideLength, long multiplier, long k, long newp) {
-    long sum = sideLength / 2;
-    System.out.println("Recursive: start: " + sideLength + " finish: " + ((sideLength * 2) - 1) + " multiplier: " + multiplier);
-    sum +=
+  public static long recursiveStep(long sideLength, long multiplier, long k, long newp, boolean first) {
+    long sum =
         (sumOfFullPowerBlock(sideLength, (sideLength * 2) - 1, k, newp) % newp * multiplier) % newp;
-    for (long i = sideLength / 4; i > 0; i = i >> 1) {
-      sum += recursiveStep(i, i, k, newp);
+      System.out.println("Recursive: start: " + sideLength + " finish: " + ((sideLength * 2) - 1) + " multiplier: " + multiplier + " sum: " + sum);
+    for (long i = sideLength / (first ? 4 : 2); i > 0; i = i >> 1) {
+//      System.out.println("next: " + i + " current: " + sideLength);
+      sum += recursiveStep(i, i, k, newp, false);
     }
     return sum % newp;
   }

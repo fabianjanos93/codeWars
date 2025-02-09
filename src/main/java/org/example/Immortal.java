@@ -11,28 +11,38 @@ public class Immortal {
   public static long mod = 0;
   public static final int SIDE_LENGTH = 2;
   public static final int K = 0;
+  public static int measure1 = 0;
+  public static int measure2 = 0;
+  public static int measure3 = 0;
+  public static int measure4 = 0;
+  public static int measure5 = 0;
+
 
   public static void main(String[] args) {
     long startTime = System.currentTimeMillis();
 //    // System.out.println(elderAge(SIDE_LENGTH, SIDE_LENGTH, K, 1000007));
 //    // System.out.println(elderAge(545, 435, 342, 1000007)); // result: 808451
-    System.out.println(elderAge(3, 6, 0, 1000007)); //result : 5
+    System.out.println(elderAge(1270500410L, 85045587L, 7109602, 13719506)); //result : 5
     long estimatedTime = System.currentTimeMillis() - startTime;
+    System.out.println("Stage 1: " + measure1);
+    System.out.println("Stage 2: " + measure2 );
+    System.out.println("rest: " + (estimatedTime-measure1-measure2) );
     System.out.println("run milis:" + estimatedTime);
+
 
     startTime = System.currentTimeMillis();
 //    // System.out.println(oldElderAge(SIDE_LENGTH, SIDE_LENGTH, K, 1000007));
-    System.out.println(oldElderAge(3, 6, 0, 1000007)); //result : 5
+//    System.out.println(oldElderAge(3, 6, 0, 1000007)); //result : 5
 
-    for(int i = 1 ; i < 70 ; i++) {
-      for(int j = i; j < 70 ; j++) {
-        long e = elderAge(i, j, 3, 1000007);
-        long o = oldElderAge(i, j, 3, 1000007);
-        if ( o != e) {
-          System.out.println(i + " " + j);
-        }
-      }
-    }
+//    for(int i = 1 ; i < 70 ; i++) {
+//      for(int j = i; j < 70 ; j++) {
+//        long e = elderAge(i, j, 3, 1000007);
+//        long o = oldElderAge(i, j, 3, 1000007);
+//        if ( o != e) {
+//          System.out.println(i + " " + j);
+//        }
+//      }
+//    }
 
     estimatedTime = System.currentTimeMillis() - startTime;
     System.out.println("run milis:" + estimatedTime);
@@ -84,8 +94,12 @@ public class Immortal {
 
   private static long stage0(long n, long m, long k, long newp, long blockSize, long offset) {
     long sum = 0;
+    long startTime = System.currentTimeMillis();
     sum += stage1(n, m, k, newp) % newp;
+    measure1 += System.currentTimeMillis() - startTime;
+    startTime = System.currentTimeMillis();
     sum += stage2(n, k, newp, blockSize, offset);
+    measure2 += System.currentTimeMillis() - startTime;
     return sum;
   }
 
@@ -130,11 +144,15 @@ public class Immortal {
     long sum =
         (sumOfFullPowerBlock(sideLength, (sideLength * 2) - 1, k, newp) % newp * multiplier) % newp;
 //      System.out.println("Recursive: start: " + sideLength + " finish: " + ((sideLength * 2) - 1) + " multiplier: " + multiplier + " sum: " + sum);
-    for (long i = sideLength / (first ? 4 : 2); i > 0; i = i >> 1) {
+    if(sum>0) {
+      for (long i = sideLength / (first ? 4 : 2); i > 0; i = i >> 1) {
 //      System.out.println("next: " + i + " current: " + sideLength);
-      sum += recursiveStep(i, i, k, newp, false);
+        sum += recursiveStep(i, i, k, newp, false);
+      }
+      return sum % newp;
+    } else {
+      return 0;
     }
-    return sum % newp;
   }
 
   static long oldElderAge(long n, long m, long k, long newp) {

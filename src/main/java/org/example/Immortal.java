@@ -11,6 +11,7 @@ public class Immortal {
   public static long mod = 0;
   public static final int SIDE_LENGTH = 2;
   public static final int K = 0;
+  public static long NEWP = 0;
   public static int measure1 = 0;
   public static int measure2 = 0;
   public static int measure3 = 0;
@@ -59,6 +60,7 @@ public class Immortal {
       m = n;
       n = temp;
     }
+    NEWP = newp;
     long sum = 0;
     long width = n;
     long heightTop = m;
@@ -253,7 +255,9 @@ public class Immortal {
       return 0;
     }
     n = n - k < 1 ? 1 : n - k;
-    return (((m - n + 1) * (n + m)) / 2);
+    long diff = (m - n + 1) % NEWP;
+    long sum = n + m;
+    return ((diff * sum) / 2) % NEWP;
   }
 
   public static long highestPowerOfTwoLessThan(long n) {

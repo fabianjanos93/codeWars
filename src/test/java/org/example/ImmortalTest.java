@@ -53,7 +53,7 @@ class ImmortalTest {
     assertEquals(808451, Immortal.elderAge(545, 435, 342, 1000007));
   }
   @Test
-  void first70times70() {
+  void first600times600() {
     for(int i = 1 ; i < 600 ; i++) {
       for(int j = i; j < 600 ; j++) {
         long e = Immortal.elderAge(i, j, 50, 103);

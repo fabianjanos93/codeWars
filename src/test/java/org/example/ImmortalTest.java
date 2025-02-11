@@ -1,5 +1,6 @@
 package org.example;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
@@ -50,5 +51,17 @@ class ImmortalTest {
   @Test
   void rect545times435k432() {
     assertEquals(808451, Immortal.elderAge(545, 435, 342, 1000007));
+  }
+  @Test
+  void first70times70() {
+    for(int i = 1 ; i < 70 ; i++) {
+      for(int j = i; j < 70 ; j++) {
+        long e = Immortal.elderAge(i, j, 3, 1000007);
+        long o = Immortal.oldElderAge(i, j, 3, 1000007);
+        if ( o != e) {
+          assertEquals(o,e);
+        }
+      }
+    }
   }
 }

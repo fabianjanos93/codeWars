@@ -1,6 +1,5 @@
 package org.example;
 
-import java.util.HashMap;
 
 public class Immortal {
 
@@ -11,7 +10,6 @@ public class Immortal {
   public static long mod = 0;
   public static final int SIDE_LENGTH = 2;
   public static final int K = 0;
-  public static long NEWP = 0;
   public static int measure1 = 0;
   public static int measure2 = 0;
   public static int measure3 = 0;
@@ -21,34 +19,8 @@ public class Immortal {
 
   public static void main(String[] args) {
     long startTime = System.currentTimeMillis();
-//    // System.out.println(elderAge(SIDE_LENGTH, SIDE_LENGTH, K, 1000007));
-//    // System.out.println(elderAge(545, 435, 342, 1000007)); // result: 808451
-//    System.out.println(elderAge(10, 15, 0, 13719506)); //result : 5
     System.out.println(elderAge(28827050410L, 35165045587L, 7109602, 13719506)); //result : 5456283
     long estimatedTime = System.currentTimeMillis() - startTime;
-//    System.out.println("Stage 1: " + measure1);
-//    System.out.println("Stage 2: " + measure2);
-//    System.out.println("Stage 2a: " + measure3);
-//    System.out.println("Stage 2b: " + measure4);
-//    System.out.println("numberOfCalls: " + measure5);
-//    System.out.println("rest: " + (estimatedTime - measure1 - measure2));
-    System.out.println("run milis:" + estimatedTime);
-
-    startTime = System.currentTimeMillis();
-//    // System.out.println(oldElderAge(SIDE_LENGTH, SIDE_LENGTH, K, 1000007));
-    System.out.println(oldElderAge(65, 256, 3, 13)); //result : 5
-//
-//    for(int i = 1 ; i < 70 ; i++) {
-//      for(int j = i; j < 70 ; j++) {
-//        long e = elderAge(i, j, 3, 1000007);
-//        long o = oldElderAge(i, j, 3, 1000007);
-//        if ( o != e) {
-//          System.out.println(i + " " + j);
-//        }
-//      }
-//    }
-
-    estimatedTime = System.currentTimeMillis() - startTime;
     System.out.println("run milis:" + estimatedTime);
   }
 
@@ -60,7 +32,6 @@ public class Immortal {
       m = n;
       n = temp;
     }
-    NEWP = newp;
     long sum = 0;
     long width = n;
     long heightTop = m;
@@ -69,28 +40,18 @@ public class Immortal {
 
     long blockSizeTop = highestPowerOfTwoLessThan(n - 1);
     long blockSizeBottom = highestPowerOfTwoLessThan(m - 1);
-//    System.out.println("blockSizeTop: " + blockSizeTop + " blockSizeBottom: " + blockSizeBottom);
     while ((heightBottom > 0 && blockSizeBottom > 0) || (heightTop > 0 && blockSizeTop > 0)) {
       if (heightTop > 0 && blockSizeTop > 0) {
-//        System.out.println("TOP");
-//        System.out.println("widthTop: " + width + " | heightTop: " + heightTop + " | blockSizeTop: "
-//            + blockSizeTop);
         sum += (stage0(width, heightTop, k, newp, offset))% newp;
         heightTop -= blockSizeTop;
         width -= blockSizeTop;
         if (isPowerOfTwo(n) && isPowerOfTwo(m)) {
-//          System.out.println("2Power");
           blockSizeTop = highestPowerOfTwoLessThan(heightTop-1);
         } else {
-//          System.out.println("Other");
           blockSizeTop = Math.max(highestPowerOfTwoLessThan(width-1), highestPowerOfTwoLessThan(heightTop-1));
         }
       }
-//      System.out.println("blockSizeTop: " + blockSizeTop + " blockSizeBottom: " + blockSizeBottom
-//          + " heightBottom: " + heightBottom + " heightTop: " + heightTop);
       if (blockSizeBottom > 0) {
-//        System.out.println("BOTTOM");
-//        System.out.println("heightTop: " + heightBottom + " | blockSizeBottom: " + blockSizeBottom);
         sum += (stage0(heightBottom, heightBottom, k, newp, offset))% newp;
         heightBottom -= blockSizeBottom;
         offset += blockSizeBottom;
@@ -120,15 +81,8 @@ public class Immortal {
     long sum = 0;
     while (totalLength + 1 <= n) {
       long multiplier = Math.min(nSideLength, n - nSideLength);
-//      System.out.println(
-//          "totalSideN: " + (totalLength + nSideLength) + "(n: " + n + ", m: " + m + ")"
-//              + " multiplier: " + multiplier + " ( " + nSideLength + "|" + (n - nSideLength) + ")"
-//              + " totalLength " + totalLength);
       long remainingN = n - totalLength - 1;
-//      System.out.println(m < nSideLength);
-//      System.out.println(n < totalLength + nSideLength);
       if (m < nSideLength && n <= totalLength + nSideLength) {
-//        System.out.println("n: " + (totalLength - 1) + "(" + n + ") m: " + m);
         if( (n - nSideLength) > 0) {
           sum += (recursiveStep(nSideLength, m, multiplier, k, newp, true, false))% newp;
         }
@@ -150,20 +104,15 @@ public class Immortal {
     long sum = 0;
     if (calculated) {
       sum =
-          (sumOfFullPowerBlock(sideLength, (sideLength * 2) - 1, k) * Math.min(
+          (sumOfFullPowerBlock(sideLength, (sideLength * 2) - 1, k, newp) * Math.min(
               multiplier, m));
     }
-//    System.out.println(
-//        "Recursive: start: " + sideLength + " finish: " + ((sideLength * 2) - 1) + " multiplier: "
-//            + multiplier + " mSide: " + m + " sum: " + sum);
     if (sum > 0 || !calculated) {
       for (long i = sideLength / (first ? 4 : 2); i > 0; i = i >> 1) {
         if (recursiveStartPoint <= m) {
           sum += (recursiveStep(i, m - recursiveStartPoint, i, k, newp, false, true))% newp;
           recursiveStartPoint += i;
         }
-//        System.out.println("next: " + i + " current: " + sideLength + " recursiveStartPoint: "
-//            + recursiveStartPoint);
       }
       return sum % newp;
     } else {
@@ -172,7 +121,6 @@ public class Immortal {
   }
 
   private static long calculateRest(long offsetM, long offsetN, long n, long m, long k, long newp) {
-//    System.out.println("offsetM: " + offsetM + " offsetN: " + offsetN + " n: " + n + " m: " + m);
     long nSidePower = highestPowerOfTwoLessThan(n);
     long mSidePower = highestPowerOfTwoLessThan(m);
     long side = Math.max(nSidePower, mSidePower);
@@ -184,26 +132,17 @@ public class Immortal {
     }
     long firstValueOfBlock = (offsetN ^ offsetM);
     long lastValueOfBlock = ((offsetN + side - 1) ^ offsetM);
-//    System.out.println(
-//        "firstValueOfBlock: " + firstValueOfBlock + " lastValueOfBlock: " + lastValueOfBlock
-//            + " multiplier: " + multiplier + " side: " + side);
-    long sum = sumOfFullPowerBlock(firstValueOfBlock, lastValueOfBlock, k) * multiplier;
+    long sum = sumOfFullPowerBlock(firstValueOfBlock, lastValueOfBlock, k, newp) * multiplier;
     if (side <= n && side <= m) {
       firstValueOfBlock = (offsetN + side ^ offsetM);
       lastValueOfBlock = ((offsetN + side * 2 - 1) ^ offsetM);
       multiplier = n - side;
-//      System.out.println(
-//          "N: firstValueOfBlock: " + firstValueOfBlock + " lastValueOfBlock: " + lastValueOfBlock
-//              + " multiplier: " + multiplier);
-      sum += (sumOfFullPowerBlock(firstValueOfBlock, lastValueOfBlock, k) * multiplier)% newp;
+      sum += (sumOfFullPowerBlock(firstValueOfBlock, lastValueOfBlock, k, newp) * multiplier)% newp;
 
       firstValueOfBlock = (offsetN ^ offsetM + side);
       lastValueOfBlock = ((offsetN + side - 1) ^ offsetM + side);
       multiplier = m - side;
-//      System.out.println(
-//          "M: firstValueOfBlock: " + firstValueOfBlock + " lastValueOfBlock: " + lastValueOfBlock
-//              + " multiplier: " + multiplier);
-      sum +=( sumOfFullPowerBlock(firstValueOfBlock, lastValueOfBlock, k) * multiplier)% newp;
+      sum +=( sumOfFullPowerBlock(firstValueOfBlock, lastValueOfBlock, k, newp) * multiplier)% newp;
     }
     if (side <= n) {
       offsetN += side;
@@ -213,7 +152,6 @@ public class Immortal {
       offsetM += side;
       m -= side;
     }
-//    System.out.println("after:  NNN: " + n + " MMM: " + m);
     if (n > 0 && m > 0) {
       sum += (calculateRest(offsetM, offsetN, n, m, k, newp))% newp;
     }
@@ -221,43 +159,15 @@ public class Immortal {
     return sum % newp;
   }
 
-
-  static long oldElderAge(long n, long m, long k, long newp) {
-    mod = newp;
-    long sum = 0;
-    if (n < m) {
-      long temp = m;
-      m = n;
-      n = temp;
-    }
-    for (long col = 0; col < m; col++) {
-      for (long row = 0; row < n; row++) {
-        long cellValue = (col ^ row) - k;
-        cellValue = cellValue >= 0 ? cellValue : 0;
-//        System.out.print(String.format("%2d ", cellValue));
-        if (cellValue > 0) {
-//          if (row < m) {
-//            cellValue = cellValue << 1;
-//          }
-          sum += cellValue;
-        }
-      }
-//      System.out.println();
-//      System.out.print("             ".repeat((int) col + 1));
-    }
-//    System.out.println();
-    return sum % newp;
-  }
-
-  public static long sumOfFullPowerBlock(long n, long m, long k) {
+  public static long sumOfFullPowerBlock(long n, long m, long k, long newp) {
     m = m - k;
     if (m < 1) {
       return 0;
     }
     n = n - k < 1 ? 1 : n - k;
-    long diff = (m - n + 1) % NEWP;
+    long diff = (m - n + 1) % newp;
     long sum = n + m;
-    return ((diff * sum) / 2) % NEWP;
+    return ((diff * sum) / 2) % newp;
   }
 
   public static long highestPowerOfTwoLessThan(long n) {

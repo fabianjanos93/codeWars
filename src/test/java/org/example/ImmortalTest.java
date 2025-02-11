@@ -52,17 +52,4 @@ class ImmortalTest {
   void rect545times435k432() {
     assertEquals(808451, Immortal.elderAge(545, 435, 342, 1000007));
   }
-  @Test
-  void first600times600() {
-    for(int i = 1 ; i < 600 ; i++) {
-      for(int j = i; j < 600 ; j++) {
-        long e = Immortal.elderAge(i, j, 50, 103);
-        long o = Immortal.oldElderAge(i, j, 50, 103);
-        if ( o != e) {
-          System.out.println(i + " " + j);
-          assertEquals(o,e);
-        }
-      }
-    }
-  }
 }

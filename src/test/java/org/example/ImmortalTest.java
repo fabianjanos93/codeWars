@@ -54,11 +54,12 @@ class ImmortalTest {
   }
   @Test
   void first70times70() {
-    for(int i = 1 ; i < 70 ; i++) {
-      for(int j = i; j < 70 ; j++) {
-        long e = Immortal.elderAge(i, j, 3, 1000007);
-        long o = Immortal.oldElderAge(i, j, 3, 1000007);
+    for(int i = 1 ; i < 600 ; i++) {
+      for(int j = i; j < 600 ; j++) {
+        long e = Immortal.elderAge(i, j, 50, 103);
+        long o = Immortal.oldElderAge(i, j, 50, 103);
         if ( o != e) {
+          System.out.println(i + " " + j);
           assertEquals(o,e);
         }
       }

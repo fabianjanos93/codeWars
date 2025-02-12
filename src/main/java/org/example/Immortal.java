@@ -165,9 +165,20 @@ public class Immortal {
       return 0;
     }
     n = n - k < 1 ? 1 : n - k;
-    long diff = (m - n + 1) % newp;
-    long sum = n + m;
-    return ((diff * sum) / 2) % newp;
+
+    long nWhole = n / newp;
+    long mWhole = m / newp;
+    n %= newp;
+    m %= newp;
+    if (nWhole == mWhole) {
+      return (((m - n + 1) * (n + m)) / 2) % newp;
+    } else {
+      long sum = 0;
+      sum += (((newp - n) * (n + newp - 1)) / 2) % newp;
+      sum += ((((newp) * (newp - 1) ) / 2) * (mWhole - nWhole - 1)) % newp;
+      sum += (((1 + m) * (m)) / 2) % newp;
+      return sum % newp;
+    }
   }
 
   public static long highestPowerOfTwoLessThan(long n) {

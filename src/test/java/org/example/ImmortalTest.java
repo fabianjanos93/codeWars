@@ -74,6 +74,11 @@ class ImmortalTest {
   }
 
   @Test
+  void angry3() {
+    assertEquals(109398, elderAge(181073735732752L, 42244706068104L, 5617604, 197822));
+  }
+
+  @Test
   void interested1() {
     assertEquals(206, elderAge(997, 153, 16, 224));
   }
@@ -90,7 +95,7 @@ class ImmortalTest {
   }
 
   @Test
-  void first600times600() {
+  void first200times200() {
     for (int newp = 2; newp < 70; newp++) {
       for (int i = 1; i < 200; i++) {
         for (int j = i; j < 200; j++) {

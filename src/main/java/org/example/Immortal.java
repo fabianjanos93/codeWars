@@ -1,6 +1,11 @@
 package org.example;
 
 
+import java.util.function.IntUnaryOperator;
+import java.util.function.LongUnaryOperator;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
+
 public class Immortal {
 
   /**
@@ -11,14 +16,14 @@ public class Immortal {
 
   public static void main(String[] args) {
     long startTime = System.currentTimeMillis();
-    System.out.println(elderAge(9, 32, 6, 40)); //result : 5456283
+    System.out.println(elderAge(1000000000, 5000000000L, 300000, 300000)); //result : 5456283
     long estimatedTime = System.currentTimeMillis() - startTime;
     System.out.println("run milis:" + estimatedTime);
 
-    startTime = System.currentTimeMillis();
-    System.out.println(oldElderAge(9, 32, 6, 40)); //result : 5456283
-    estimatedTime = System.currentTimeMillis() - startTime;
-    System.out.println("run milis:" + estimatedTime);
+//    startTime = System.currentTimeMillis();
+//    System.out.println(oldElderAge(1, 10, 6, 3)); //result : 5456283
+//    estimatedTime = System.currentTimeMillis() - startTime;
+//    System.out.println("run milis:" + estimatedTime);
   }
 
 
@@ -83,7 +88,7 @@ public class Immortal {
       totalLength += nSideLength;
       nSideLength <<= 1;
     }
-    return sum;
+    return sum % newp;
   }
 
   public static long recursiveStep(long sideLength, long m, long multiplier, long k, long newp,
@@ -91,18 +96,17 @@ public class Immortal {
     long recursiveStartPoint = first ? sideLength / 2 : 0;
     long sum = 0;
     if (calculated) {
-      sum =
-          (sumOfFullPowerBlock(sideLength, (sideLength * 2) - 1, k, newp) * Math.min(
+      sum = (sumOfFullPowerBlock(sideLength, (sideLength * 2) - 1, k, newp) * Math.min(
               multiplier, m));
     }
-    if (sum > 0 || !calculated) {
+    if (((sideLength * 2)-k) > 0 || !calculated) {
       for (long i = sideLength / (first ? 4 : 2); i > 0; i = i >> 1) {
         if (recursiveStartPoint <= m) {
-          sum += (recursiveStep(i, m - recursiveStartPoint, i, k, newp, false, true));
+          sum += (recursiveStep(i, m - recursiveStartPoint, i, k, newp, false, true)) % newp;
           recursiveStartPoint += i;
         }
       }
-      return sum;
+      return sum % newp;
     } else {
       return 0;
     }
@@ -120,17 +124,17 @@ public class Immortal {
     }
     long firstValueOfBlock = (offsetN ^ offsetM);
     long lastValueOfBlock = ((offsetN + side - 1) ^ offsetM);
-    long sum = sumOfFullPowerBlock(firstValueOfBlock, lastValueOfBlock, k, newp) * multiplier;
+    long sum = (sumOfFullPowerBlock(firstValueOfBlock, lastValueOfBlock, k, newp) * multiplier) % newp;
     if (side <= n && side <= m) {
       firstValueOfBlock = (offsetN + side ^ offsetM);
       lastValueOfBlock = ((offsetN + side * 2 - 1) ^ offsetM);
       multiplier = n - side;
-      sum += (sumOfFullPowerBlock(firstValueOfBlock, lastValueOfBlock, k, newp) * multiplier);
+      sum += (sumOfFullPowerBlock(firstValueOfBlock, lastValueOfBlock, k, newp) * multiplier) % newp;
 
       firstValueOfBlock = (offsetN ^ offsetM + side);
       lastValueOfBlock = ((offsetN + side - 1) ^ offsetM + side);
       multiplier = m - side;
-      sum +=( sumOfFullPowerBlock(firstValueOfBlock, lastValueOfBlock, k, newp) * multiplier);
+      sum +=( sumOfFullPowerBlock(firstValueOfBlock, lastValueOfBlock, k, newp) * multiplier) % newp;
     }
     if (side <= n) {
       offsetN += side;
@@ -144,10 +148,11 @@ public class Immortal {
       sum += (calculateRest(offsetM, offsetN, n, m, k, newp));
     }
 
-    return sum;
+    return sum % newp;
   }
 
   public static long sumOfFullPowerBlock(long n, long m, long k, long newp) {
+
     m = m - k;
     if (m < 1) {
       return 0;
@@ -159,15 +164,19 @@ public class Immortal {
     n %= newp;
     m %= newp;
     if (nWhole == mWhole) {
-      return (((m - n + 1) * (n + m)) / 2);
+      return (((m - n + 1) * ((n + m))) / 2)% newp;
     } else {
       long sum = 0;
-      sum += (((newp - n) * (n + newp - 1)) / 2);
+      sum += (((newp - n) * ((n + newp - 1))) / 2) % newp;
       sum += (newp % 2 == 0 ? (newp / 2) * ((mWhole - nWhole - 1) % 2) : 0) % newp;
       sum += (((1 + m) * (m)) / 2) % newp;
       return sum;
     }
   }
+
+//  private static LongUnaryOperator calc(long k, long newp) {
+//    return number -> number - k > 0 ? (number - k) % newp : 0;
+//  }
 
   public static long highestPowerOfTwoLessThan(long n) {
     if (n < 1) {
